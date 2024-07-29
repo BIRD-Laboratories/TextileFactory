@@ -1,35 +1,21 @@
-from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext
-import subprocess
-import sys
-import platform
+from setuptools import setup, find_packages
+import os
 
-class CustomBuildExtCommand(build_ext):
-    def run(self):
-        # Compile the C code into a shared library
-        try:
-            if platform.system() == "Windows":
-                subprocess.run(["gcc", "-shared", "-o", "physics2d.dll", "src/physics2d.c"], check=True)
-            else:
-                subprocess.run(["gcc", "-shared", "-o", "physics2d.so", "src/physics2d.c"], check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Compilation failed with error: {e}")
-            sys.exit(1)
-        build_ext.run(self)
+# Path to the precompiled shared library
+precompiled_lib_path = os.path.join('src', 'physics2d.so')
 
-physics2d_module = Extension(
-    'physics2d',
-    sources=['src/physics2d.c'],
-    include_dirs=[],
-    libraries=[],
-    library_dirs=[]
-)
+# Ensure the precompiled library exists
+if not os.path.exists(precompiled_lib_path):
+    raise FileNotFoundError(f"Precompiled library not found at {precompiled_lib_path}. Please compile the C code manually.")
 
 setup(
     name="factory_simulation",
     version="0.1",
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
+    package_data={
+        'factory_simulation': ['physics2d.so']
+    },
     install_requires=[
         "ctypes"
     ],
@@ -50,8 +36,4 @@ setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    ext_modules=[physics2d_module],
-    cmdclass={
-        'build_ext': CustomBuildExtCommand
-    }
 )
