@@ -1,0 +1,50 @@
+{
+    "global_resolution": [80, 60],
+    "factory_layout": {
+        "Entrance": [5, 5],
+        "Cutting Area": [35, 5],
+        "Sewing Area": [50, 5],
+        "Stuffing Area": [65, 5],
+        "Finishing Area": [5, 20],
+        "Quality Control": [20, 20],
+        "Packaging Area": [35, 20],
+        "Shipping Area": [50, 20],
+        "Utilities": [65, 20],
+        "Completed Area": [65, 40]
+    },
+    "equipment_details": {
+        "Cutting Area": {"type": "Cutting Machine", "position": [35, 10], "speed": 5},
+        "Sewing Area": {"type": "Sewing Machine", "position": [50, 10], "speed": 10},
+        "Stuffing Area": {"type": "Stuffing Machine", "position": [65, 10], "speed": 2},
+        "Finishing Area": {"type": "Finishing Table", "position": [5, 25], "speed": 1.5},
+        "Quality Control": {"type": "Inspection Table", "position": [20, 25], "speed": 3},
+        "Packaging Area": {"type": "Packaging Machine", "position": [35, 25], "speed": 2.5},
+        "Shipping Area": {"type": "Loading Dock", "position": [50, 25], "speed": 4}
+    },
+    "conveyor_paths": [
+        [5, 5], [35, 5], [50, 5], [65, 5], [5, 20], [20, 20], [35, 20], [50, 20], [65, 20], [65, 40]
+    ],
+    "material_radius": 1,
+    "distance_threshold": 7,
+    "time_threshold": 5,
+    "item_rate": 1,
+    "steps_per_second": 0.01,
+    "hud_params": {
+        "hud_height": 500,
+        "hud_bg_color": [240, 240, 240],
+        "hud_border_color": [100, 100, 100],
+        "hud_text_color": [0, 0, 0],
+        "button_color": [150, 150, 150],
+        "button_text_color": [0, 0, 0],
+        "button_restart_pos": [300, 510],
+        "button_auto_move_pos": [450, 510],
+        "button_width": 100,
+        "button_height": 30,
+        "button_stop_spawn_pos": [200, 510]
+    },
+    "box_params": {
+        "box_width": 10,
+        "box_height": 10,
+        "box_color": [100, 100, 100]
+    }
+}
