@@ -1,5 +1,5 @@
 import unittest
-from .physics_2d_bindings import Physics2D
+from TextileFactory.physics2d_bindings import Physics2D
 
 class TestPhysics2D(unittest.TestCase):
     def setUp(self):
