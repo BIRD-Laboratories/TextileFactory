@@ -8,32 +8,42 @@ precompiled_lib_path = os.path.join('src', 'physics2d.so')
 if not os.path.exists(precompiled_lib_path):
     raise FileNotFoundError(f"Precompiled library not found at {precompiled_lib_path}. Please compile the C code manually.")
 
+# Read the long description from README.md
+long_description = ""
+try:
+    with open("README.md", "r") as f:
+        long_description = f.read()
+except FileNotFoundError:
+    print("README.md not found. Using an empty long description.")
+
 setup(
-    name="factory_simulation",
+    name="TextileFactory",
     version="0.1",
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     package_data={
-        'factory_simulation': ['physics2d.so']
+        'TextileFactory': ['physics2d.so']
     },
-    install_requires=[
-        "ctypes"
-    ],
     entry_points={
         "console_scripts": [
             "factory_simulation=factory_simulation.cli:main"
         ]
     },
-    author="Your Name",
-    author_email="your.email@example.com",
+    author="Julian Herrera",
+    author_email="jherrera282@mycod.us",
     description="A factory simulation library",
-    long_description=open("README.md").read(),
+    long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/factory_simulation",
+    url="https://github.com/BIRD-Laboratories/TextileFactory",
     classifiers=[
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    license="MIT",
+    include_package_data=True,
 )
