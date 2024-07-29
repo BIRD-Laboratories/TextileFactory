@@ -1,2 +1,0 @@
-[console_scripts]
-factory_simulation = factory_simulation.cli:main

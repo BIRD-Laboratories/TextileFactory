@@ -1,6 +1,0 @@
-setup.py
-src/factory_simulation.egg-info/PKG-INFO
-src/factory_simulation.egg-info/SOURCES.txt
-src/factory_simulation.egg-info/dependency_links.txt
-src/factory_simulation.egg-info/entry_points.txt
-src/factory_simulation.egg-info/top_level.txt
