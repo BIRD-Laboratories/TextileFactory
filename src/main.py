@@ -45,8 +45,3 @@ class FactorySimulation:
 
     def __del__(self):
         free_physics2d(self.physics)
-
-if __name__ == "__main__":
-    params = load_params()
-    simulation = FactorySimulation(params, print_only=True)
-    simulation.run()

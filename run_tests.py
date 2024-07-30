@@ -4,16 +4,13 @@ import unittest
 from unittest.mock import patch
 
 # Add the src directory to the Python path
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 from TextileFactory import *
-#from TextileFactory.main import FactorySimulation
-#from TextileFactory.params import load_params
-#from TextileFactory.render import render_simulation
-#from TextileFactory.physics2d_bindings import Physics2D
+from TextileFactory import *
 
 class TestTextileFactory(unittest.TestCase):
-    @patch('TextileFactory.core.FactorySimulation')
+    @patch('TextileFactory.main.FactorySimulation')
     def test_factory_simulation(self, mock_factory_simulation):
         # Mock the FactorySimulation class
         mock_instance = mock_factory_simulation.return_value
@@ -77,8 +74,10 @@ class TestTextileFactory(unittest.TestCase):
         mock_physics2d.assert_called_once_with(mock_params)
 
 if __name__ == "__main__":
+    print("Discovering tests in 'tests' directory...")
     loader = unittest.TestLoader()
-    suite = loader.discover('test', pattern='test_*.py')
+    suite = loader.discover('tests', pattern='test_*.py')
+    print(f"Discovered tests: {suite}")
 
     # Create a TestRunner with higher verbosity
     runner = unittest.TextTestRunner(verbosity=2)
@@ -99,4 +98,5 @@ if __name__ == "__main__":
     print(f"\nRan {result.testsRun} tests in total.")
     print(f"Skipped: {len(result.skipped)}")
     print(f"Failures: {len(result.failures)}")
+    print(f"Errors: {len(result.errors)}")
     print(f"Errors: {len(result.errors)}")

@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from ..render import render_simulation
-from ..params import load_params
+from TextileFactory.render import render_simulation
+from TextileFactory.params import load_params
 import pygame
 
 class TestRender(unittest.TestCase):
