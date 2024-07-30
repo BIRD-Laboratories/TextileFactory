@@ -1,12 +1,39 @@
-from setuptools import setup, find_packages
+from setuptools import setup, Extension, find_packages
+from setuptools.command.build_ext import build_ext
 import os
+import subprocess
 
-# Path to the precompiled shared library
-precompiled_lib_path = os.path.join('src', 'physics2d.so')
+class CustomBuildExtCommand(build_ext):
+    """Customized setuptools build_ext command to compile the C program."""
+    def run(self):
+        # Compile the C program
+        self.compile_c_program()
+        # Run the default build_ext command
+        build_ext.run(self)
 
-# Ensure the precompiled library exists
-if not os.path.exists(precompiled_lib_path):
-    raise FileNotFoundError(f"Precompiled library not found at {precompiled_lib_path}. Please compile the C code manually.")
+    def compile_c_program(self):
+        # Define the source file and the output shared library
+        source_file = os.path.join('src', 'physics2d.c')
+        output_library = os.path.join('src', 'physics2d.so')
+        # Define the command to compile the C program
+        compile_command = [
+            'gcc', '-shared', '-o', output_library, '-fPIC', source_file
+        ]
+        # Run the compilation command
+        try:
+            subprocess.check_call(compile_command)
+        except subprocess.CalledProcessError as e:
+            print(f"Compilation failed with exit code {e.returncode}")
+            print(f"Command: {e.cmd}")
+            print(f"Output: {e.output}")
+            raise
+
+# Define the extension module
+physics2d_module = Extension(
+    'TextileFactory.physics2d',
+    sources=[os.path.join('src', 'physics2d.c')],
+    language='c'
+)
 
 # Read the long description from README.md
 long_description = ""
@@ -22,11 +49,11 @@ setup(
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     package_data={
-        'TextileFactory': ['physics2d.so']
+        'TextileFactory': [os.path.join('src', 'physics2d.so')]
     },
     entry_points={
         "console_scripts": [
-            "factory_simulation=factory_simulation.cli:main"
+            "factory_simulation=TextileFactory.cli:main"
         ]
     },
     author="Julian Herrera",
@@ -46,4 +73,15 @@ setup(
     ],
     license="MIT",
     include_package_data=True,
+    install_requires=[
+        'pygame',  # Add Pygame as a dependency
+    ],
+    test_suite='tests',
+    tests_require=[
+        'unittest',  # Add unittest as a test dependency
+    ],
+    ext_modules=[physics2d_module],
+    cmdclass={
+        'build_ext': CustomBuildExtCommand
+    }
 )
