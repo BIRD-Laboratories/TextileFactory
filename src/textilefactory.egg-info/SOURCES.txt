@@ -1,6 +1,0 @@
-setup.py
-src/textilefactory.egg-info/PKG-INFO
-src/textilefactory.egg-info/SOURCES.txt
-src/textilefactory.egg-info/dependency_links.txt
-src/textilefactory.egg-info/entry_points.txt
-src/textilefactory.egg-info/top_level.txt
