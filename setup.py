@@ -17,7 +17,7 @@ class CustomBuildExtCommand(build_ext):
         output_library = os.path.join('src', 'physics2d.so')
         # Define the command to compile the C program
         compile_command = [
-            'gcc', '-shared', '-o', output_library, '-fPIC', source_file
+            'gcc', '-shared', '-o', output_library, source_file
         ]
         # Run the compilation command
         try:
