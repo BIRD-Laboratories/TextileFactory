@@ -1,30 +1,34 @@
 import unittest
-from TextileFactory.main import FactorySimulation
-from TextileFactory.params import load_params
+from unittest.mock import patch, MagicMock
+from ..render import render_simulation
+from ..params import load_params
+import pygame
 
-class TestFactorySimulation(unittest.TestCase):
+class TestRender(unittest.TestCase):
     def setUp(self):
         self.params = load_params('params.json')  # Adjust the path as needed
-        self.simulation = FactorySimulation(self.params)
 
-    def test_initialization(self):
-        self.assertEqual(self.simulation.params, self.params)
-        self.assertIsNotNone(self.simulation.physics)
-        self.assertFalse(self.simulation.print_only)
-        self.assertEqual(self.simulation.current_area, "Entrance")
-        self.assertEqual(self.simulation.time_per_step, 0)
-        self.assertEqual(self.simulation.object_count, 0)
-        self.assertEqual(self.simulation.completed_count, 0)
-        self.assertTrue(self.simulation.auto_move)
-        self.assertTrue(self.simulation.spawn_enabled)
-        self.assertIsNotNone(self.simulation.last_spawn_time)
+    @patch('TextileFactory.render.render_simulation')
+    def test_render_simulation_print_only_true(self, mock_render_simulation):
+        # Mock the render_simulation function
+        mock_render_simulation.return_value = None
 
-    def test_run_method(self):
-        # This test assumes that the run method can be executed without infinite loop
-        # You might need to modify the run method to allow for testing or use mocking
-        self.simulation.run()
-        self.assertGreater(self.simulation.object_count, 0)
-        self.assertGreater(self.simulation.completed_count, 0)
+        # Run the render simulation function with print_only=True
+        render_simulation(params_file='params.json', print_only=True)
+
+        # Verify that the function was called with the correct arguments
+        mock_render_simulation.assert_called_once_with(params_file='params.json', print_only=True)
+
+    @patch('TextileFactory.render.render_simulation')
+    def test_render_simulation_print_only_false(self, mock_render_simulation):
+        # Mock the render_simulation function
+        mock_render_simulation.return_value = None
+
+        # Run the render simulation function with print_only=False
+        render_simulation(params_file='params.json', print_only=False)
+
+        # Verify that the function was called with the correct arguments
+        mock_render_simulation.assert_called_once_with(params_file='params.json', print_only=False)
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,34 +1,41 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from TextileFactory.render import render_simulation
-from TextileFactory.params import load_params
-import pygame
+from ..physics2d_bindings import Physics2D
 
-class TestRender(unittest.TestCase):
+class TestPhysics2D(unittest.TestCase):
     def setUp(self):
-        self.params = load_params('params.json')  # Adjust the path as needed
+        self.params = {
+            "global_resolution": [80, 60],
+            "factory_layout": {
+                "Entrance": [5, 5],
+                "Completed Area": [65, 40]
+            },
+            "conveyor_paths": [
+                [5, 5], [65, 40]
+            ],
+            "equipment_details": {
+                "Entrance": {"speed": 5}
+            },
+            "distance_threshold": 7,
+            "time_threshold": 5,
+            "item_rate": 1,
+            "steps_per_second": 0.01
+        }
+        self.physics = Physics2D(self.params)
 
-    @patch('TextileFactory.render.render_simulation')
-    def test_render_simulation_print_only_true(self, mock_render_simulation):
-        # Mock the render_simulation function
-        mock_render_simulation.return_value = None
+    def test_spawn_material(self):
+        material = self.physics.spawn_material([5, 5], "Cot")
+        self.assertEqual(material['position'].tolist(), [5, 5])
+        self.assertEqual(material['type'], "Cot")
 
-        # Run the render simulation function with print_only=True
-        render_simulation(params_file='params.json', print_only=True)
+    def test_calculate_movement_time(self):
+        time = self.physics.calculate_movement_time(5)
+        self.assertEqual(time, 2)
 
-        # Verify that the function was called with the correct arguments
-        mock_render_simulation.assert_called_once_with(params_file='params.json', print_only=True)
+    def test_vectorized_move_materials(self):
+        material = self.physics.spawn_material([5, 5], "Cot")
+        self.physics.vectorized_move_materials([material], self.params["conveyor_paths"], 0.5)
+        self.assertNotEqual(material['position'].tolist(), [5, 5])
 
-    @patch('TextileFactory.render.render_simulation')
-    def test_render_simulation_print_only_false(self, mock_render_simulation):
-        # Mock the render_simulation function
-        mock_render_simulation.return_value = None
-
-        # Run the render simulation function with print_only=False
-        render_simulation(params_file='params.json', print_only=False)
-
-        # Verify that the function was called with the correct arguments
-        mock_render_simulation.assert_called_once_with(params_file='params.json', print_only=False)
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_update_materials(self):
+        updates = self.physics.update_materials(True, True, 0)
+        self.assertGreater(len(updates["materials"]), 0)
