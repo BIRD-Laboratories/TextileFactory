@@ -59,7 +59,7 @@ Content of ./src/test/__init__.py:
 Content of ./src/test/test_physics2d.py:
 =================
 import unittest
-from TextileFactory.physics2d_bindings import Physics2D
+from ..physics2d_bindings import Physics2D
 
 class TestPhysics2D(unittest.TestCase):
     def setUp(self):
@@ -144,7 +144,7 @@ from .main import FactorySimulation
 from .cli import main as cli_main
 from .render import render_simulation
 from .params import load_params
-from .physics2d_bindings.py import *
+from .physics2d_bindings import *
 
 # You can also define package-level variables or functions
 __version__ = '0.1'=================
@@ -226,7 +226,7 @@ if __name__ == "__main__":
 Content of ./src/render.py:
 =================
 import pygame
-from .core import FactorySimulation
+from .main import FactorySimulation
 from .params import load_params
 
 def render_simulation(params_file='params.json', print_only=False):
@@ -541,148 +541,6 @@ if __name__ == "__main__":
     print(f"Failures: {len(result.failures)}")
     print(f"Errors: {len(result.errors)}")=================
 
-Content of ./build/lib.linux-x86_64-cpython-310/core/params.py:
-=================
-import json
-
-def load_params(file_path):
-    with open(file_path, 'r') as file:
-        params = json.load(file)
-    return params
-=================
-
-Content of ./build/lib.linux-x86_64-cpython-310/core/__init__.py:
-=================
-from .core import params
-from .core import physics2d_bindings
-from .core import render
-
-# You can also define package-level variables or functions
-__version__ = '0.1'=================
-
-Content of ./build/lib.linux-x86_64-cpython-310/core/render.py:
-=================
-import pygame
-from .core import FactorySimulation
-from .params import load_params
-
-def render_simulation(params_file='params.json', print_only=False):
-    params = load_params(params_file)
-    simulation = FactorySimulation(params, print_only=print_only)
-
-    pygame.init()
-    screen = pygame.display.set_mode((params['global_resolution'][0], params['global_resolution'][1]))
-    clock = pygame.time.Clock()
-
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        simulation.run()
-
-        # Clear the screen
-        screen.fill((255, 255, 255))
-
-        # Render the state array
-        state_array = simulation.physics.get_state_array()
-        for x in range(len(state_array)):
-            for y in range(len(state_array[x])):
-                if state_array[x][y] == 1:
-                    pygame.draw.rect(screen, (0, 0, 0), (x, y, 1, 1))
-
-        pygame.display.flip()
-        clock.tick(60)
-
-    pygame.quit()
-
-if __name__ == "__main__":
-    render_simulation()=================
-
-Content of ./build/lib.linux-x86_64-cpython-310/core/physics2d_bindings.py:
-=================
-import ctypes
-import os
-
-# Load the shared library
-_lib_path = os.path.join(os.path.dirname(__file__), 'physics2d.so')
-physics2d_lib = ctypes.CDLL(_lib_path)
-
-# Define the structures
-class Vec2(ctypes.Structure):
-    _fields_ = [("x", ctypes.c_float),
-                ("y", ctypes.c_float)]
-
-class Material(ctypes.Structure):
-    _fields_ = [("position", Vec2),
-                ("velocity", Vec2),
-                ("type", ctypes.c_char * 4),
-                ("area", ctypes.c_int),
-                ("start_time", ctypes.c_long),
-                ("path_progress", ctypes.c_float),
-                ("path_index", ctypes.c_int)]
-
-class Physics2D(ctypes.Structure):
-    _fields_ = [("width", ctypes.c_int),
-                ("height", ctypes.c_int),
-                ("materials", ctypes.POINTER(Material)),
-                ("material_count", ctypes.c_int),
-                ("distance_threshold", ctypes.c_float),
-                ("time_threshold", ctypes.c_float),
-                ("item_rate", ctypes.c_float),
-                ("steps_per_second", ctypes.c_float),
-                ("conveyor_paths", ctypes.POINTER(Vec2)),
-                ("conveyor_path_count", ctypes.c_int)]
-
-# Define the functions
-physics2d_lib.create_physics2d.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.POINTER(Vec2), ctypes.c_int]
-physics2d_lib.create_physics2d.restype = ctypes.POINTER(Physics2D)
-
-physics2d_lib.spawn_material.argtypes = [ctypes.POINTER(Physics2D), Vec2, ctypes.c_char_p]
-
-physics2d_lib.vectorized_move_materials.argtypes = [ctypes.POINTER(Physics2D), ctypes.c_float]
-
-physics2d_lib.update.argtypes = [ctypes.POINTER(Physics2D), ctypes.c_float]
-
-physics2d_lib.get_state_array.argtypes = [ctypes.POINTER(Physics2D), ctypes.POINTER(ctypes.POINTER(ctypes.c_int))]
-
-physics2d_lib.print_state_array.argtypes = [ctypes.POINTER(Physics2D), ctypes.POINTER(ctypes.POINTER(ctypes.c_int))]
-
-physics2d_lib.free_physics2d.argtypes = [ctypes.POINTER(Physics2D)]
-
-# Helper functions
-def create_physics2d(width, height, distance_threshold, time_threshold, item_rate, steps_per_second, conveyor_paths):
-    conveyor_paths_array = (Vec2 * len(conveyor_paths))(*conveyor_paths)
-    return physics2d_lib.create_physics2d(width, height, distance_threshold, time_threshold, item_rate, steps_per_second, conveyor_paths_array, len(conveyor_paths))
-
-def spawn_material(physics, pos, material_type):
-    physics2d_lib.spawn_material(physics, pos, material_type.encode('utf-8'))
-
-def vectorized_move_materials(physics, speed):
-    physics2d_lib.vectorized_move_materials(physics, speed)
-
-def update(physics, dt):
-    physics2d_lib.update(physics, dt)
-
-def get_state_array(physics):
-    state_array = [[0 for _ in range(physics.contents.height)] for _ in range(physics.contents.width)]
-    state_array_ptr = (ctypes.POINTER(ctypes.c_int) * physics.contents.width)(*([ctypes.cast(ctypes.pointer(ctypes.c_int(0)), ctypes.POINTER(ctypes.c_int)) for _ in range(physics.contents.height)]))
-    for i in range(physics.contents.width):
-        state_array_ptr[i] = (ctypes.c_int * physics.contents.height)(*state_array[i])
-    physics2d_lib.get_state_array(physics, state_array_ptr)
-    for i in range(physics.contents.width):
-        for j in range(physics.contents.height):
-            state_array[i][j] = state_array_ptr[i][j]
-    return state_array
-
-def print_state_array(physics):
-    state_array = get_state_array(physics)
-    physics2d_lib.print_state_array(physics, (ctypes.POINTER(ctypes.c_int) * physics.contents.width)(*([ctypes.cast(ctypes.pointer(ctypes.c_int(0)), ctypes.POINTER(ctypes.c_int)) for _ in range(physics.contents.height)])))
-
-def free_physics2d(physics):
-    physics2d_lib.free_physics2d(physics)=================
-
 Content of ./build/lib.linux-x86_64-cpython-310/test/test_render.py:
 =================
 import unittest
@@ -734,7 +592,7 @@ Content of ./build/lib.linux-x86_64-cpython-310/test/__init__.py:
 Content of ./build/lib.linux-x86_64-cpython-310/test/test_physics2d.py:
 =================
 import unittest
-from TextileFactory.physics2d_bindings import Physics2D
+from ..physics2d_bindings import Physics2D
 
 class TestPhysics2D(unittest.TestCase):
     def setUp(self):
@@ -822,7 +680,7 @@ def main():
     #pygame.init()
 
     # Run the render simulation in image mode
-    TextileFactory.render.render_simulation(params_file='params.json', print_only=True)
+    TextileFactory.render_simulation(params_file='params.json', print_only=True)
 
 if __name__ == "__main__":
     main()=================

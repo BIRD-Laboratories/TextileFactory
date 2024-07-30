@@ -13,8 +13,8 @@ class CustomBuildExtCommand(build_ext):
 
     def compile_c_program(self):
         # Define the source file and the output shared library
-        source_file = os.path.join('src', 'physics2d.c')
-        output_library = os.path.join('src', 'physics2d.so')
+        source_file = os.path.join('physics2d.c')
+        output_library = os.path.join('physics2d.so')
         # Define the command to compile the C program
         compile_command = [
             'gcc', '-shared', '-o', output_library, source_file
@@ -31,7 +31,7 @@ class CustomBuildExtCommand(build_ext):
 # Define the extension module
 physics2d_module = Extension(
     'TextileFactory.physics2d',
-    sources=[os.path.join('src', 'physics2d.c')],
+    sources=['physics2d.c'],
     language='c'
 )
 
@@ -46,10 +46,9 @@ except FileNotFoundError:
 setup(
     name="TextileFactory",
     version="0.1",
-    packages=find_packages(where='src'),
-    package_dir={'': 'src'},
+    packages=find_packages(),
     package_data={
-        'TextileFactory': [os.path.join('src', 'physics2d.so')]
+        'TextileFactory': ['physics2d.so']
     },
     entry_points={
         "console_scripts": [
