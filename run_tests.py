@@ -1,12 +1,16 @@
 import sys
 import os
 import unittest
+from unittest.mock import patch
 
 # Add the src directory to the Python path
-from TextileFactory.main import FactorySimulation
-from TextileFactory.params import load_params
-from TextileFactory.render import render_simulation
-from TextileFactory.physics2d_bindings import Physics2D
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+from TextileFactory import *
+#from TextileFactory.main import FactorySimulation
+#from TextileFactory.params import load_params
+#from TextileFactory.render import render_simulation
+#from TextileFactory.physics2d_bindings import Physics2D
 
 class TestTextileFactory(unittest.TestCase):
     @patch('TextileFactory.core.FactorySimulation')
@@ -74,7 +78,7 @@ class TestTextileFactory(unittest.TestCase):
 
 if __name__ == "__main__":
     loader = unittest.TestLoader()
-    suite = loader.discover('tests', pattern='test_*.py')
+    suite = loader.discover('test', pattern='test_*.py')
 
     # Create a TestRunner with higher verbosity
     runner = unittest.TextTestRunner(verbosity=2)

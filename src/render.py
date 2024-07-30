@@ -1,5 +1,5 @@
 import pygame
-from .core import FactorySimulation
+from .main import FactorySimulation
 from .params import load_params
 
 def render_simulation(params_file='params.json', print_only=False):
