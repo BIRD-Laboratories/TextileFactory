@@ -13,8 +13,8 @@ class CustomBuildExtCommand(build_ext):
 
     def compile_c_program(self):
         # Define the source file and the output shared library
-        source_file = os.path.join('physics2d.c')
-        output_library = os.path.join('physics2d.so')
+        source_file = os.path.join('textilefactorylib', 'src', 'physics2d.c')
+        output_library = os.path.join('textilefactorylib', 'src', 'physics2d.so')
         # Define the command to compile the C program
         compile_command = [
             'gcc', '-shared', '-o', output_library, source_file
@@ -30,8 +30,8 @@ class CustomBuildExtCommand(build_ext):
 
 # Define the extension module
 physics2d_module = Extension(
-    'TextileFactory.physics2d',
-    sources=['physics2d.c'],
+    'textilefactorylib.src.physics2d',
+    sources=['textilefactorylib/src/physics2d.c'],
     language='c'
 )
 
@@ -44,15 +44,16 @@ except FileNotFoundError:
     print("README.md not found. Using an empty long description.")
 
 setup(
-    name="TextileFactory",
+    name="textilefactorylib",
     version="0.1",
-    packages=find_packages(),
+    packages=find_packages(where='textilefactorylib/src'),
+    package_dir={'': 'textilefactorylib/src'},
     package_data={
-        'TextileFactory': ['physics2d.so']
+        'textilefactorylib.src': ['physics2d.so']
     },
     entry_points={
         "console_scripts": [
-            "factory_simulation=TextileFactory.cli:main"
+            "factory_simulation=textilefactorylib.src.cli:main"
         ]
     },
     author="Julian Herrera",
